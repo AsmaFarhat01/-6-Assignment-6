@@ -1,0 +1,82 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+class Node {
+public:
+    char data;
+    int freq;
+    Node* left;
+    Node* right;
+
+    Node(char d, int f) : data(d), freq(f), left(NULL), right(NULL) {}
+};
+
+class cmp {
+public:
+    bool operator()(Node* a, Node* b) {
+        return a->freq > b->freq;
+    }
+};
+
+class Solution {
+public:
+    void traverse(string temp, vector<string>& ans, Node* root) {
+        if (!root->left && !root->right) {
+            ans.push_back(temp);
+            return;
+        }
+
+        if (root->left) {
+            traverse(temp + '0', ans, root->left);
+        }
+        if (root->right) {
+            traverse(temp + '1', ans, root->right);
+        }
+    }
+
+    vector<string> huffmanCodes(string s, vector<int> f, int n) {
+        priority_queue<Node*, vector<Node*>, cmp> p;
+
+        for (int i = 0; i < n; i++) {
+            Node* temp = new Node(s[i], f[i]);
+            p.push(temp);
+        }
+
+        while (p.size() > 1) {
+            Node* top1 = p.top();
+            p.pop();
+            Node* top2 = p.top();
+            p.pop();
+            int sum = top1->freq + top2->freq;
+            Node* temp = new Node('\0', sum);
+            temp->left = top1;
+            temp->right = top2;
+            p.push(temp);
+        }
+
+        string temp = "";
+        Node* root = p.top();
+        vector<string> ans;
+        traverse(temp, ans, root);
+
+        return ans;
+    }
+};
+
+int main() {
+    Solution solution;
+    vector<int> frequencies = {5, 9, 12, 13, 16, 45};
+    vector<string> codes = solution.huffmanCodes("abcdef", frequencies, 6);
+
+    // Print the Huffman codes
+    for (int i = 0; i < 6; i++) {
+        cout << "S[" << i << "] : " << codes[i] << endl;
+    }
+
+    return 0;
+}
+
+
